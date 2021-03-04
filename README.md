@@ -9,7 +9,7 @@ To install go to the [**releases page**](https://github.com/AndyFilter/DialogueM
 # How to use
 I think I'm gonna do some more explaining in the program itself for now even though it's pretty self explanatory. All You do is **create a project**, go to the *Create Tab* **create some dialogues** and **test them** in the *Test Tab*. When You think You are done save the dialogues, go back to the *Project Tab*, select the desired export path and press ***Export***.
 
-Now that You have a *.Json* file all You need to do is import it into Your game and code Your *Dialogue System* for it. I'll add example for **Godot** and maybe some other game engines.
+Now that You have a *.Json* file all You need to do is import it into Your game and code Your *Dialogue System* for it. I'll add examples of the Dialogue System for **Godot** and maybe some other game engines.
 
 # To Do
 
