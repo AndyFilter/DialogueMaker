@@ -955,7 +955,7 @@ namespace DialogueMaker
                 Directory.CreateDirectory(Path.Combine(Utils.UserDataPath.FullName, NewProject.Name));
                 File.WriteAllText(Utils.GetProjectPath(NewProject.Name), JsonSerializer.Serialize(NewProject));
             }
-            else if(ProjectCreate.Content.ToString() == "Save" && !Utils.UserDataPath.GetDirectories().Any(s => ProjectName.Equals(s.Name)))
+            else if (ProjectCreate.Content.ToString() == "Save" && !Utils.UserDataPath.GetDirectories().Any(s => ProjectName.Equals(s.Name)))
             {
                 foreach (DirectoryInfo Dir in Utils.UserDataPath.GetDirectories())
                 {
@@ -966,7 +966,7 @@ namespace DialogueMaker
 
                     var ProjectData = JsonSerializer.Deserialize<Structs.Project>(FileText);
 
-                    if(ProjectData.Name == SelectedProj.Name)
+                    if (ProjectData.Name == SelectedProj.Name)
                     {
                         CurrentProject = GetCurrentProject();
 
