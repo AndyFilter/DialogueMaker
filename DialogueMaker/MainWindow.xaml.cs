@@ -760,8 +760,8 @@ namespace DialogueMaker
         {
             if (CurrentProject == null)
             {
-                return;
                 CreateNotification("Please create/select a project first");
+                return;
             }
 
             File.WriteAllText(Utils.GetProjectPath(CurrentProject.Name), JsonSerializer.Serialize(GetCurrentProject()));

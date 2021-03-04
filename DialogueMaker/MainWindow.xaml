@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DialogueMaker"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800" MinWidth="750" MinHeight="450">
+        Title="Dialogue Maker" Height="500" Width="800" MinWidth="750" MinHeight="450" Icon="/media/DialogueMaker.ico">
     <Grid>
         <TabControl x:Name="TabCrl">
             <TabItem Header="Project">

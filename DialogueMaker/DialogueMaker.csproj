@@ -1,12 +1,24 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>media\dialoguemaker.ico</ApplicationIcon>
+    <Platforms>AnyCPU;x64</Platforms>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="media\dialoguemaker.ico" />
+    <None Remove="media\DialogueMaker.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="WinCopies.WindowsAPICodePack.Shell" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="media\dialoguemaker.ico" />
   </ItemGroup>
 </Project>
