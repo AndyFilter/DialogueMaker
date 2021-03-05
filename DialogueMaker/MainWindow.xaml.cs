@@ -320,14 +320,12 @@ namespace DialogueMaker
 
             var label = new Label();
             var text = "None";
-            label.Padding = new Thickness(2);
             label.DataContext = new Structs.Node() { Id = -2, Next_id = -2, Text = string.Format("({0})", text) };
             label.Content = string.Format("({0})", text);
             Output.Add(label);
 
             label = new Label();
             text = "Exit the Dialogue";
-            label.Padding = new Thickness(2);
             label.DataContext = new Structs.Node() { Id = -1, Next_id = -1, Text = string.Format("({0})", text) };
             label.Content = string.Format("({0})", text);
             Output.Add(label);
@@ -345,7 +343,6 @@ namespace DialogueMaker
                 {
                     text += "...";
                 }
-                label.Padding = new Thickness(2);
                 label.DataContext = node;
                 label.Content = string.Format("({0}) {1}", node.Id, text);
                 Output.Add(label);
@@ -889,7 +886,7 @@ namespace DialogueMaker
 
         private void ProjectSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems == null || e.AddedItems.Count <= 0)
+            if (e.AddedItems == null || e.AddedItems.Count <= 0 || (e.AddedItems[0] as Label).DataContext == null)
                 return;
 
             var SelectedItem = (e.AddedItems[0] as Label);
@@ -971,7 +968,9 @@ namespace DialogueMaker
                         CurrentProject = GetCurrentProject();
 
                         CurrentProject.Name = ProjectName;
-                        CurrentProject.Exportpath = ExportPathBox.Text;
+
+                        if(ExportPathBox.DataContext != null)
+                            CurrentProject.Exportpath = ExportPathBox.Text;
 
                         var NewDir = Directory.CreateDirectory(Path.Combine(Utils.UserDataPath.FullName, ProjectName));
 
@@ -1004,7 +1003,9 @@ namespace DialogueMaker
                         CurrentProject = GetCurrentProject();
 
                         CurrentProject.Name = ProjectName;
-                        CurrentProject.Exportpath = ExportPathBox.Text;
+
+                        if (ExportPathBox.DataContext != null)
+                            CurrentProject.Exportpath = ExportPathBox.Text;
 
                         File.WriteAllText(Utils.GetProjectPath(Dir.Name), JsonSerializer.Serialize(CurrentProject));
                         (ProjectsBox.SelectedItem as Label).DataContext = CurrentProject;
@@ -1058,6 +1059,8 @@ namespace DialogueMaker
             {
                 ExportPathGotFocus(ExportPathBox, new RoutedEventArgs(GotFocusEvent));
             }
+            if (ExportPathBox.DataContext == null)
+                return;
             File.WriteAllText(Path.Combine(CurrentProject.Exportpath, CurrentProject.Name + ".Json"), JsonSerializer.Serialize(GetCurrentProject()));
             CreateNotification("Project has been exported successfully");
         }
@@ -1104,6 +1107,37 @@ namespace DialogueMaker
             NpcNameBox.Text = "";
             DialogueBox.Text = "";
             DialogueText.Text = "";
+        }
+
+        private void MinimalizeClicked(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void MaximizeClicked(object sender, RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+            switch (WindowState)
+            {
+                case WindowState.Maximized:
+                    this.WindowState = WindowState.Normal;
+                    button.Content = "◻";
+                    break;
+                case WindowState.Normal:
+                    this.WindowState = WindowState.Maximized;
+                    button.Content = "❏";
+                    break;
+            }
+        }
+
+        private void ExitClicked(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void MouseTabDrag(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+                this.DragMove();
         }
     }
 }

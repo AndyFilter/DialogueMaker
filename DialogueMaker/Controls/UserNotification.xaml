@@ -8,7 +8,7 @@
              d:DesignHeight="450" d:DesignWidth="800" IsHitTestVisible="False" Margin="0,5,0,0">
     <Grid x:Name="Grid" IsHitTestVisible="False">
         <Border Background="#FFD4D4D4" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" CornerRadius="8">
-            <TextBlock x:Name="NotificationLabel" Text="This is a very long text to test the program's functions" TextWrapping="Wrap" Padding="4,4,4,4"/>
+            <TextBlock x:Name="NotificationLabel" Text="This is a very long text to test the program's functions" TextWrapping="Wrap" Padding="4,4,4,4" FontFamily="Montserrat Medium" Foreground="Black" FontSize="14"/>
         </Border>
         <Grid.RenderTransform>
             <TranslateTransform x:Name="TranslateTransform"/>

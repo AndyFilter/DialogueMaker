@@ -5,188 +5,224 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DialogueMaker"
         mc:Ignorable="d"
-        Title="Dialogue Maker" Height="500" Width="800" MinWidth="750" MinHeight="450" Icon="/media/DialogueMaker.ico">
-    <Grid>
-        <TabControl x:Name="TabCrl">
-            <TabItem Header="Project">
-                <DockPanel Margin="20,10,20,10">
-                    <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch" Orientation="Horizontal">
-                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom">
-                            <Label Content="Select Project:"/>
-                            <ComboBox Name="ProjectsBox" MinWidth="150" SelectionChanged="ProjectSelectionChanged"/>
-                        </StackPanel>
-                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="20,0,0,0">
-                            <Label Content="Name:"/>
-                            <TextBox x:Name="ProjectNameBox" Text="" MinWidth="150" MaxLines="1" TextWrapping="NoWrap" MaxWidth="250" InputScope="FileName"/>
-                        </StackPanel>
-                        <Button x:Name="ProjectCreate" Content="Create" Margin="20,0,20,0" VerticalAlignment="Bottom" IsEnabled="False" Click="CreateProjectClicked"/>
+        Title="Dialogue Maker" Height="500
+        " Width="900" MinWidth="900" MinHeight="450" Icon="/media/DialogueMaker.ico" WindowStyle="None" Visibility="Visible" ResizeMode="CanResize" AllowsTransparency="True">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CornerRadius="15" ResizeBorderThickness="8" GlassFrameThickness="5" UseAeroCaptionButtons="False" CaptionHeight="0"/>
+    </WindowChrome.WindowChrome>
+    <Window.Resources>
+        <ResourceDictionary Source="Styles.xaml"></ResourceDictionary>
+    </Window.Resources>
+    <Window.Background>
+        <SolidColorBrush Color="White" Opacity="0"/>
+    </Window.Background>
+    <Border Background="{StaticResource DefaultBackground}" Style="{StaticResource Window}">
+        <Grid>
+            <Border VerticalAlignment="Top" CornerRadius="10,10,0,0" Background="{DynamicResource LightBackground}">
+                <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" MouseLeftButtonDown="MouseTabDrag" Margin="5,0,0,0">
+                    <Grid.Background>
+                        <SolidColorBrush Color="#00000000" Opacity="0"/>
+                    </Grid.Background>
+                    <Label Content="Dialogue Maker" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18">
+                        <Label.Foreground>
+                            <LinearGradientBrush EndPoint="1,0" StartPoint="0,1" SpreadMethod="Reflect">
+                                <GradientStop Color="#FFF05E00"/>
+                                <GradientStop Color="#FFCF12EB" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Label.Foreground>
+                    </Label>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="_" HorizontalAlignment="Right" VerticalAlignment="Top" Style="{StaticResource TopTabButton}" FontSize="15" FontFamily="Montserrat ExtraBold" Cursor="Hand" Height="Auto" Click="MinimalizeClicked"/>
+                        <Button Content="◻" HorizontalAlignment="Right" VerticalAlignment="Top" Style="{StaticResource TopTabButton}" FontSize="15" FontFamily="Montserrat ExtraBold" Cursor="Hand" Height="Auto" Click="MaximizeClicked"/>
+                        <Button Content="X" HorizontalAlignment="Right" VerticalAlignment="Top" Style="{StaticResource TopTabButton}" FontSize="15" FontFamily="Montserrat ExtraBold" Cursor="Hand" Height="Auto" Click="ExitClicked" Visibility="Visible"/>
                     </StackPanel>
-                    <StackPanel Margin="0,20,0,0" DockPanel.Dock="Top" Visibility="Collapsed">
-                        <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <Label Content="Source Path:" DockPanel.Dock="Top"/>
-                            <TextBox Text="(Leave Blank if creating a new Project)" MinWidth="150" MaxLines="1" TextWrapping="NoWrap" HorizontalAlignment="Stretch" InputScope="Url"/>
-                        </DockPanel>
-                    </StackPanel>
-                    <StackPanel Margin="0,10,0,0" DockPanel.Dock="Top">
-                        <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <Label Content="Export Path:" DockPanel.Dock="Top"/>
-                            <TextBox x:Name="ExportPathBox" Text="" MinWidth="150" MaxLines="1" TextWrapping="NoWrap" HorizontalAlignment="Stretch" InputScope="Url" GotFocus="ExportPathGotFocus"/>
-                        </DockPanel>
-                    </StackPanel>
-                    <DockPanel VerticalAlignment="Bottom">
-                        <Button x:Name="ProjectExport" Content="Export" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="16" Click="ExportClicked" DockPanel.Dock="Right"/>
-                        <Button x:Name="ProjectDelete" Content="Delete Project" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="16" Click="DeleteProjectClicked"/>
-                    </DockPanel>
-                </DockPanel>
-            </TabItem>
-            <TabItem Header="Create">
-                <DockPanel  Margin="15,10,15,10" HorizontalAlignment="Stretch">
-                    <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10,0,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <Label Content="Npc:"/>
-                        <ListView Name="NpcList" HorizontalAlignment="Left" MinWidth="150" VerticalContentAlignment="Center" Grid.Row="1" Width="150" MaxWidth="150" SelectionChanged="NewNpcSelected" SelectionMode="Single">
-                        </ListView>
-                        <Button x:Name="NpcListAdd" Content="Add new NPC" VerticalAlignment="Bottom" Grid.Row="2" Click="NewNpcClicked"/>
-                    </Grid>
-                    <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="20,0,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <Label Content="Dialogue:"/>
-                        <ListView Name="DialogueList" HorizontalAlignment="Left" MinWidth="150" VerticalContentAlignment="Center" Grid.Row="1" SelectionChanged="NewDialogueSelected" Width="150" MaxWidth="150" SelectionMode="Single">
-                        </ListView>
-                        <Button x:Name="DialogueListAdd" Content="Add new Dialogue" VerticalAlignment="Bottom" Grid.Row="2" Click="NewDialogueClicked"/>
-                    </Grid>
-                    <Grid VerticalAlignment="Stretch" Margin="20,0,0,0" HorizontalAlignment="Stretch">
-                        <DockPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                            <StackPanel Margin="0,0,20,0">
-                                <Label Content="Name:"/>
-                                <TextBox x:Name="NpcNameBox" MinWidth="100" MaxLines="1" Width="150" InputScope="PersonalGivenName" TextChanged="NameChanged"/>
-                            </StackPanel>
-                            <StackPanel Margin="0,0,20,0">
-                                <Label Content="Type:"/>
-                                <ComboBox x:Name="NpcTypeBox" ItemsSource="{Binding NpcType}" SelectionChanged="TypeChanged">
-                                    <ComboBoxItem IsSelected="True">Foreground</ComboBoxItem>
-                                    <ComboBoxItem>Background</ComboBoxItem>
+                </Grid>
+            </Border>
+            <TabControl x:Name="TabCrl" Background="{x:Null}" BorderThickness="0,1,0,0" Margin="0,35,0,0">
+                <TabItem Header="Project">
+                    <DockPanel Margin="25,10,25,10">
+                        <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch" Orientation="Horizontal">
+                            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                                <Label Content="Select Project:"/>
+                                <ComboBox Name="ProjectsBox" MinWidth="150" SelectionChanged="ProjectSelectionChanged">
+                                    <!--<ComboBoxItem Content="Item 1" Selector.IsSelected="True"/>-->
                                 </ComboBox>
                             </StackPanel>
-                            <Grid VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                                <Button x:Name="DeleteNpcButton" Content="Delete Npc" HorizontalAlignment="Right" VerticalAlignment="Stretch" Click="DeleteNpcClicked"/>
-                            </Grid>
+                            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="20,0,0,0">
+                                <Label Content="Name:"/>
+                                <TextBox x:Name="ProjectNameBox" Text="" MinWidth="150" MaxLines="1" TextWrapping="NoWrap" MaxWidth="250" InputScope="FileName" Template="{StaticResource TextBoxBaseControlTemplate}"/>
+                            </StackPanel>
+                            <Button x:Name="ProjectCreate" Content="Create" Margin="20,0,20,0" VerticalAlignment="Bottom" IsEnabled="False" Click="CreateProjectClicked" Style="{StaticResource NormalButton}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,20,0,0" DockPanel.Dock="Top" Visibility="Collapsed">
+                            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <Label Content="Source Path:" DockPanel.Dock="Top"/>
+                                <TextBox Text="(Leave Blank if creating a new Project)" MinWidth="150" MaxLines="1" TextWrapping="NoWrap" HorizontalAlignment="Stretch" InputScope="Url"/>
+                            </DockPanel>
+                        </StackPanel>
+                        <StackPanel Margin="0,10,0,0" DockPanel.Dock="Top">
+                            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <Label Content="Export Path:" DockPanel.Dock="Top"/>
+                                <TextBox x:Name="ExportPathBox" Text="" MinWidth="150" MaxLines="1" TextWrapping="NoWrap" HorizontalAlignment="Stretch" InputScope="Url" GotFocus="ExportPathGotFocus" Template="{StaticResource TextBoxBaseControlTemplate}"/>
+                            </DockPanel>
+                        </StackPanel>
+                        <DockPanel VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <Button x:Name="ProjectExport" Content="Export" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="16" Click="ExportClicked" DockPanel.Dock="Right" Style="{StaticResource NormalButton}" FontFamily="Montserrat Medium"/>
+                            <Button x:Name="ProjectDelete" Content="Delete Project" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="16" Click="DeleteProjectClicked" Style="{StaticResource DeleteButton}" FontFamily="Montserrat Medium"/>
                         </DockPanel>
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,60,0,0" DockPanel.Dock="Top">
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="Create">
+                    <DockPanel  Margin="15,10,25,10" HorizontalAlignment="Stretch">
+                        <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10,0,0,0" Width="180">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Label Content="Npc:"/>
+                            <ListView Name="NpcList" HorizontalAlignment="Stretch" MinWidth="180" VerticalContentAlignment="Center" Grid.Row="1" MaxWidth="150" SelectionChanged="NewNpcSelected" SelectionMode="Single" HorizontalContentAlignment="Stretch">
+                            </ListView>
+                            <Button x:Name="NpcListAdd" Content="Add new NPC" VerticalAlignment="Bottom" Grid.Row="2" Click="NewNpcClicked" Style="{StaticResource NormalButton}" Margin="0,5,0,0"/>
+                        </Grid>
+                        <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="20,0,0,0" Width="180">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
                             <Label Content="Dialogue:"/>
-                            <TextBox x:Name="DialogueBox" Grid.Row="1" Margin="0,0,0,10" AcceptsReturn="True" TextWrapping="Wrap" TextChanged="DialogueEdited"/>
-                            <StackPanel VerticalAlignment="Bottom" Grid.Row="2">
-                                <Label Content="Choices:" Padding="2,2,2,2"/>
-                                <Grid Margin="15,10,15,40" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="20"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                            <ListView Name="DialogueList" HorizontalAlignment="Left" MinWidth="180" VerticalContentAlignment="Center" Grid.Row="1" SelectionChanged="NewDialogueSelected" Width="150" MaxWidth="150" SelectionMode="Single">
+                            </ListView>
+                            <Button x:Name="DialogueListAdd" Content="Add new Dialogue" VerticalAlignment="Bottom" Grid.Row="2" Click="NewDialogueClicked" Style="{StaticResource NormalButton}" Margin="0,5,0,0"/>
+                        </Grid>
+                        <Grid VerticalAlignment="Stretch" Margin="20,0,0,0" HorizontalAlignment="Stretch">
+                            <DockPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                                <StackPanel Margin="0,0,20,0">
+                                    <Label Content="Name:"/>
+                                    <TextBox x:Name="NpcNameBox" MinWidth="100" MaxLines="1" Width="150" InputScope="PersonalGivenName" TextChanged="NameChanged" Template="{StaticResource TextBoxBaseControlTemplate}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,20,0">
+                                    <Label Content="Type:"/>
+                                    <ComboBox x:Name="NpcTypeBox" ItemsSource="{Binding NpcType}" SelectionChanged="TypeChanged">
+                                        <ComboBoxItem IsSelected="True">Foreground</ComboBoxItem>
+                                        <ComboBoxItem>Background</ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
+                                <Grid VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                                    <Button x:Name="DeleteNpcButton" Content="Delete Npc" HorizontalAlignment="Right" VerticalAlignment="Stretch" Click="DeleteNpcClicked" Style="{StaticResource DeleteButton}"/>
+                                </Grid>
+                            </DockPanel>
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,60,0,0" DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
                                     <RowDefinition Height="*"/>
-                                    <RowDefinition Height="20"/>
-                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
-                                <StackPanel Orientation="Vertical">
-                                    <TextBox x:Name="ButtonBox1" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged"/>
-                                    <ComboBox x:Name="ButtonCombo1" SelectionChanged="NextNodeChanged"/>
+                                <Label Content="Dialogue:"/>
+                                <TextBox x:Name="DialogueBox" Grid.Row="1" Margin="0,0,0,10" AcceptsReturn="True" TextWrapping="Wrap" TextChanged="DialogueEdited" Template="{StaticResource TextBoxBigControlTemplate}"/>
+                                <StackPanel VerticalAlignment="Bottom" Grid.Row="2">
+                                    <Label Content="Choices:" Padding="2,2,2,2"/>
+                                    <Grid Margin="15,5,15,45" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Grid.Row="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="20"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="20"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <StackPanel Orientation="Vertical">
+                                            <TextBox x:Name="ButtonBox1" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged"/>
+                                            <ComboBox x:Name="ButtonCombo1" SelectionChanged="NextNodeChanged"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" >
+                                            <TextBox x:Name="ButtonBox2" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged"/>
+                                            <ComboBox x:Name="ButtonCombo2" SelectionChanged="NextNodeChanged"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="2">
+                                            <TextBox x:Name="ButtonBox3" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged"/>
+                                            <ComboBox x:Name="ButtonCombo3" SelectionChanged="NextNodeChanged"/>
+                                        </StackPanel>
+                                        <StackPanel  Grid.Column="2" Grid.Row="2">
+                                            <TextBox x:Name="ButtonBox4" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged"/>
+                                            <ComboBox x:Name="ButtonCombo4" SelectionChanged="NextNodeChanged"/>
+                                        </StackPanel>
+                                    </Grid>
                                 </StackPanel>
-                                <StackPanel Grid.Column="2" >
-                                    <TextBox x:Name="ButtonBox2" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged"/>
-                                    <ComboBox x:Name="ButtonCombo2" SelectionChanged="NextNodeChanged"/>
-                                </StackPanel>
-                                <StackPanel Grid.Row="2">
-                                    <TextBox x:Name="ButtonBox3" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged"/>
-                                    <ComboBox x:Name="ButtonCombo3" SelectionChanged="NextNodeChanged"/>
-                                </StackPanel>
-                                <StackPanel  Grid.Column="2" Grid.Row="2">
-                                    <TextBox x:Name="ButtonBox4" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged"/>
-                                    <ComboBox x:Name="ButtonCombo4" SelectionChanged="NextNodeChanged"/>
-                                </StackPanel>
-                            </Grid>
-                            </StackPanel>
-                            <Grid VerticalAlignment="Bottom" Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Button Content="Save" Margin="15,0,10,0" Click="SaveClicked"/>
-                                <Button Content="Delete Dialogue" Grid.Column="1" Margin="10,0,15,0" Click="DeleteDialogueClicked"/>
+                                <Grid VerticalAlignment="Bottom" Grid.Row="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Content="Save" Margin="15,0,10,0" Click="SaveClicked" Style="{StaticResource NormalButton}"/>
+                                    <Button Content="Delete Dialogue" Grid.Column="1" Margin="10,0,15,0" Click="DeleteDialogueClicked" Style="{StaticResource DeleteButton}"/>
+                                </Grid>
                             </Grid>
                         </Grid>
-                    </Grid>
-                </DockPanel>
-            </TabItem>
-            <TabItem Header="Test">
-                <StackPanel Margin="15,10,15,10" Orientation="Horizontal">
-                    <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10,0,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Label Content="Npc:"/>
-                        <ListView Name="NpcListTest" HorizontalAlignment="Left" MinWidth="150" VerticalContentAlignment="Center" Grid.Row="1" Width="150" MaxWidth="150" SelectionMode="Single" SelectedIndex="{Binding SelectedIndex, ElementName=NpcList, Mode=TwoWay}">
-                        </ListView>
-                    </Grid>
-                    <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="20,0,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Label Content="Dialogue:"/>
-                        <ListView Name="DialogueListTest" HorizontalAlignment="Left" MinWidth="150" VerticalContentAlignment="Center" Grid.Row="1" Width="150" MaxWidth="150" SelectionMode="Single" SelectedIndex="{Binding SelectedIndex, ElementName=DialogueList, Mode=TwoWay}" />
-                    </Grid>
-                    <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="20,0,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Label Content="Text:"/>
-                        <Grid Grid.Row="1">
-                            <TextBlock x:Name="DialogueText" Text="Test Dialogue Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc odio enim, efficitur sit amet est tristique, posuere sto, vel placerat mi eleifend non. Ut sodales ipsum iaculis odio porta lobortis. Fusce non velit ac justo tempor imperdiet. Sed ultricies porttitor tortor vitae eleifend. Aliquam eu tincidunt massa. Praesent at dui vulputate, pretium sapien a, convallis mi. Quisque a hendrerit magna, tristique porttitor dui. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed id nulla ac arcu blandit molestie. Pellentesque posuere ante vel massa efficitur, et venenatis nibh ultrices." TextWrapping="Wrap" TextTrimming="CharacterEllipsis" VerticalAlignment="Top" Width="350" FontSize="14" Height="265"/>
-                            <Grid Margin="15,0,15,20" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="20"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="20"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <Button x:Name="Button1" Content="Button1" Click="DialogueButtonClicked"/>
-                                <Button x:Name="Button2" Content="Button2" Grid.Column="2" Click="DialogueButtonClicked"/>
-                                <Button x:Name="Button3" Content="Button3" Grid.Row="2" Click="DialogueButtonClicked"/>
-                                <Button x:Name="Button4" Content="Button4" Grid.Column="2" Grid.Row="2" Click="DialogueButtonClicked"/>
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="Test">
+                    <DockPanel Margin="15,10,15,10">
+                        <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Label Content="Npc:"/>
+                            <ListView Name="NpcListTest" HorizontalAlignment="Left" MinWidth="180" VerticalContentAlignment="Center" Grid.Row="1" Width="150" MaxWidth="180" SelectionMode="Single" SelectedIndex="{Binding SelectedIndex, ElementName=NpcList, Mode=TwoWay}">
+                            </ListView>
+                        </Grid>
+                        <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="20,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Label Content="Dialogue:"/>
+                            <ListView Name="DialogueListTest" HorizontalAlignment="Left" MinWidth="180" VerticalContentAlignment="Center" Grid.Row="1" Width="150" MaxWidth="180" SelectionMode="Single" SelectedIndex="{Binding SelectedIndex, ElementName=DialogueList, Mode=TwoWay}" />
+                        </Grid>
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Label Content="Text:"/>
+                            <Grid Grid.Row="1">
+                                <Border CornerRadius="15" BorderThickness="3" BorderBrush="{DynamicResource LightBackground}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="8" Margin="0,0,0,110" >
+                                    <TextBlock x:Name="DialogueText" Text="" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" VerticalAlignment="Stretch" FontSize="14" Height="265" HorizontalAlignment="Stretch" FontFamily="Montserrat"/>
+                                </Border>
+                                <Grid Margin="15,0,15,0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="20"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Button x:Name="Button1" Content="Button1" Click="DialogueButtonClicked" Style="{StaticResource NormalButton}"/>
+                                    <Button x:Name="Button2" Content="Button2" Grid.Column="2" Click="DialogueButtonClicked" Style="{StaticResource NormalButton}"/>
+                                    <Button x:Name="Button3" Content="Button3" Grid.Row="2" Click="DialogueButtonClicked" Style="{StaticResource NormalButton}"/>
+                                    <Button x:Name="Button4" Content="Button4" Grid.Column="2" Grid.Row="2" Click="DialogueButtonClicked" Style="{StaticResource NormalButton}"/>
+                                </Grid>
                             </Grid>
                         </Grid>
-                    </Grid>
-                </StackPanel>
-            </TabItem>
-        </TabControl>
-        <Popup Name="myPopup">
-            <TextBlock Name="myPopupText" 
+                    </DockPanel>
+                </TabItem>
+            </TabControl>
+            <Popup Name="myPopup">
+                <TextBlock Name="myPopupText" 
                  Background="LightBlue" 
                  Foreground="Blue">
         Popup Text
-            </TextBlock>
-        </Popup>
-        <TextBox Width="0" Height="0" x:Name="UnfocusElement" />
-        <DockPanel x:Name="NotificationPanel" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="400" Width="200" Margin="0,0,5,0"/>
-    </Grid>
+                </TextBlock>
+            </Popup>
+            <TextBox Width="0" Height="0" x:Name="UnfocusElement" />
+            <DockPanel x:Name="NotificationPanel" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="400" Width="200" Margin="0,0,5,0"/>
+        </Grid>
+    </Border>
 </Window>
