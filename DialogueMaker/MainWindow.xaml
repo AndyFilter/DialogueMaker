@@ -44,13 +44,13 @@
                         <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch" Orientation="Horizontal">
                             <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom">
                                 <Label Content="Select Project:"/>
-                                <ComboBox Name="ProjectsBox" MinWidth="150" SelectionChanged="ProjectSelectionChanged">
+                                <ComboBox Name="ProjectsBox" MinWidth="150" SelectionChanged="ProjectSelectionChanged" MaxWidth="200">
                                     <!--<ComboBoxItem Content="Item 1" Selector.IsSelected="True"/>-->
                                 </ComboBox>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="20,0,0,0">
                                 <Label Content="Name:"/>
-                                <TextBox x:Name="ProjectNameBox" Text="" MinWidth="150" MaxLines="1" TextWrapping="NoWrap" MaxWidth="250" InputScope="FileName" Template="{StaticResource TextBoxBaseControlTemplate}"/>
+                                <TextBox x:Name="ProjectNameBox" Text="" MinWidth="150" MaxLines="1" TextWrapping="NoWrap" MaxWidth="450" InputScope="FileName" Template="{StaticResource TextBoxBaseControlTemplate}"/>
                             </StackPanel>
                             <Button x:Name="ProjectCreate" Content="Create" Margin="20,0,20,0" VerticalAlignment="Bottom" IsEnabled="False" Click="CreateProjectClicked" Style="{StaticResource NormalButton}"/>
                         </StackPanel>
@@ -104,7 +104,7 @@
                                 </StackPanel>
                                 <StackPanel Margin="0,0,20,0">
                                     <Label Content="Type:"/>
-                                    <ComboBox x:Name="NpcTypeBox" ItemsSource="{Binding NpcType}" SelectionChanged="TypeChanged">
+                                    <ComboBox x:Name="NpcTypeBox" ItemsSource="{Binding NpcType}" SelectionChanged="TypeChanged" MinWidth="140">
                                         <ComboBoxItem IsSelected="True">Foreground</ComboBoxItem>
                                         <ComboBoxItem>Background</ComboBoxItem>
                                     </ComboBox>
@@ -135,19 +135,19 @@
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
                                         <StackPanel Orientation="Vertical">
-                                            <TextBox x:Name="ButtonBox1" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged"/>
+                                            <TextBox x:Name="ButtonBox1" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged" Template="{StaticResource TextBoxBaseControlTemplate}"/>
                                             <ComboBox x:Name="ButtonCombo1" SelectionChanged="NextNodeChanged"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="2" >
-                                            <TextBox x:Name="ButtonBox2" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged"/>
+                                            <TextBox x:Name="ButtonBox2" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged" Template="{StaticResource TextBoxBaseControlTemplate}"/>
                                             <ComboBox x:Name="ButtonCombo2" SelectionChanged="NextNodeChanged"/>
                                         </StackPanel>
                                         <StackPanel Grid.Row="2">
-                                            <TextBox x:Name="ButtonBox3" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged"/>
+                                            <TextBox x:Name="ButtonBox3" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged" Template="{StaticResource TextBoxBaseControlTemplate}"/>
                                             <ComboBox x:Name="ButtonCombo3" SelectionChanged="NextNodeChanged"/>
                                         </StackPanel>
                                         <StackPanel  Grid.Column="2" Grid.Row="2">
-                                            <TextBox x:Name="ButtonBox4" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged"/>
+                                            <TextBox x:Name="ButtonBox4" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged" Template="{StaticResource TextBoxBaseControlTemplate}"/>
                                             <ComboBox x:Name="ButtonCombo4" SelectionChanged="NextNodeChanged"/>
                                         </StackPanel>
                                     </Grid>

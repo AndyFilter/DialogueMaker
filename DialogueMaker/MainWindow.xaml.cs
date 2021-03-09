@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace DialogueMaker
 {
@@ -47,6 +48,18 @@ namespace DialogueMaker
             var noti = new Controls.UserNotification();
 
             (noti.FindName("NotificationLabel") as TextBlock).Text = Text;
+
+            switch (Type)
+            {
+                case Structs.NotifType.Information:
+                    break;
+
+                case Structs.NotifType.Warning:
+                    (noti.FindName("Border") as Border).Background = (Brush)FindResource("NotifWarning");
+                    break;
+                case Structs.NotifType.Alert:
+                    break;
+            }
 
             NotificationPanel.Children.Add(noti);
             DockPanel.SetDock(noti, Dock.Bottom);
@@ -338,8 +351,8 @@ namespace DialogueMaker
                 if (node == CurrentNode)
                     continue;
                 label = new Label();
-                text = node.Text.Substring(0, Math.Min(node.Text.Length, 25));
-                if (node.Text.Length >= 25)
+                text = node.Text.Substring(0, Math.Min(node.Text.Length, 16));
+                if (node.Text.Length >= 16)
                 {
                     text += "...";
                 }
@@ -865,7 +878,6 @@ namespace DialogueMaker
                 label = new Label();
                 label.DataContext = ProjectData;
                 label.Content = ProjectData.Name;
-                label.Padding = new Thickness(3);
                 label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 label.MaxHeight = label.DesiredSize.Height;
                 ProjectsBox.Items.Add(label);
@@ -880,6 +892,7 @@ namespace DialogueMaker
                     ProjectsBox.SelectedItem = label;
                 }
             }
+
             //if(ProjectsBox.Items.Count > 1)
             //    ProjectsBox.SelectedIndex = 1;
         }
@@ -987,7 +1000,7 @@ namespace DialogueMaker
                     }
                 }
             }
-            else if (ProjectCreate.Content.ToString() == "Save" && Utils.UserDataPath.GetDirectories().Any(s => ProjectName.Equals(s.Name)))
+            else if (ProjectCreate.Content.ToString() == "Save" && Utils.UserDataPath.GetDirectories().Any(s => ProjectName.Equals(s.Name)) && CurrentProject.Name == ProjectName)
             {
                 foreach (DirectoryInfo Dir in Utils.UserDataPath.GetDirectories())
                 {
@@ -1016,7 +1029,7 @@ namespace DialogueMaker
             }
             else
             {
-                ProjectNameBox.Text = CurrentProject.Name;
+                CreateNotification("Project with this name already exists", Structs.NotifType.Warning);
             }
         }
 
