@@ -5,8 +5,11 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace DialogueMaker
@@ -16,7 +19,6 @@ namespace DialogueMaker
     /// </summary>
     public partial class MainWindow : Window
     {
-
         private Structs.Project CurrentProject;
 
         private Structs.NPC CurrentNPC;
@@ -28,19 +30,40 @@ namespace DialogueMaker
         private DateTime LastTimeDialogueDeleted;
         private DateTime LastTimeNpcDeleted;
 
+        private bool AutoSaveState = true;
+        private bool AutoSaveNotif = true;
+        private int AutoSaveMinutes = 1;
+
+        private string TextChoice = "Continue";
+
+        private Task AutoSavefunc;
+
+        private Structs.UserSettings UserData;
+
         private class NotificationData
         {
             public string NotiText { get; set; }
         }
 
+        private int LabelHeight = 25;
+
         public MainWindow()
         {
             InitializeComponent();
+
+#if DEBUG
+            System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
+#endif
 
             ((INotifyCollectionChanged)NpcList.Items).CollectionChanged += NpcList_CollectionChanged;
             ((INotifyCollectionChanged)DialogueList.Items).CollectionChanged += DialogueList_CollectionChanged;
 
             LoadProjectData();
+
+            ReadUserData();
+
+            if (AutoSaveState && AutoSavefunc == null)
+                AutoSavefunc = SetAutoSaveEvent(AutoSaveMinutes);
         }
 
         private void CreateNotification(string Text, Structs.NotifType Type)
@@ -122,7 +145,7 @@ namespace DialogueMaker
                 label.Content = dialogue.Text;
                 label.DataContext = dialogue;
                 label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                label.MaxHeight = label.DesiredSize.Height;
+                label.MaxHeight = LabelHeight;
                 DialogueList.Items.Add(label);
             }
         }
@@ -164,7 +187,7 @@ namespace DialogueMaker
 
             if (Choices == null || Choices.Count <= 0)
             {
-                Button1.Content = "Continue";
+                Button1.Content = TextChoice;
                 Button1.Visibility = Visibility.Visible;
                 Button1.DataContext = Choices;
                 return;
@@ -181,7 +204,7 @@ namespace DialogueMaker
                 button.Visibility = Visibility.Visible;
                 if (choice.Text.Length <= 0)
                 {
-                    button.Content = "Continue";
+                    button.Content = TextChoice;
                 }
             }
         }
@@ -206,8 +229,8 @@ namespace DialogueMaker
 
             if (Choices == null || Choices.Count <= 0)
             {
-                Button1.Content = "Continue";
-                //ButtonBox1.Text = "Continue";
+                Button1.Content = TextChoice;
+                //ButtonBox1.Text = TextChoice;
                 Button1.Visibility = Visibility.Visible;
                 Button1.DataContext = Choices;
                 return;
@@ -226,8 +249,8 @@ namespace DialogueMaker
                 button.Visibility = Visibility.Visible;
                 if (choice.Text.Length <= 0)
                 {
-                    button.Content = "Continue";
-                    buttonBox.Text = "Continue";
+                    button.Content = TextChoice;
+                    buttonBox.Text = TextChoice;
                 }
             }
 
@@ -308,13 +331,13 @@ namespace DialogueMaker
             if (Id == -1)
             {
                 var text = "Exit the Dialogue";
-                var node = new Structs.Node() { Id = -1, Next_id = -1, Text = string.Format("({0})", text) };
+                var node = new Structs.Node() { Id = -1, Text = string.Format("({0})", text) };
                 return node;
             }
             else if (Id == -2)
             {
                 var text = "None";
-                var node = new Structs.Node() { Id = -2, Next_id = -2, Text = string.Format("({0})", text) };
+                var node = new Structs.Node() { Id = -2, Text = string.Format("({0})", text) };
                 return node;
             }
             if (Npc.Nodes == null)
@@ -333,13 +356,13 @@ namespace DialogueMaker
 
             var label = new Label();
             var text = "None";
-            label.DataContext = new Structs.Node() { Id = -2, Next_id = -2, Text = string.Format("({0})", text) };
+            label.DataContext = new Structs.Node() { Id = -2, Text = string.Format("({0})", text) };
             label.Content = string.Format("({0})", text);
             Output.Add(label);
 
             label = new Label();
             text = "Exit the Dialogue";
-            label.DataContext = new Structs.Node() { Id = -1, Next_id = -1, Text = string.Format("({0})", text) };
+            label.DataContext = new Structs.Node() { Id = -1, Text = string.Format("({0})", text) };
             label.Content = string.Format("({0})", text);
             Output.Add(label);
 
@@ -351,11 +374,12 @@ namespace DialogueMaker
                 if (node == CurrentNode)
                     continue;
                 label = new Label();
-                text = node.Text.Substring(0, Math.Min(node.Text.Length, 16));
-                if (node.Text.Length >= 16)
-                {
-                    text += "...";
-                }
+                text = node.Text;
+                //text = node.Text.Substring(0, Math.Min(node.Text.Length, 16));
+                //if (node.Text.Length >= 16)
+                //{
+                //    text += "...";
+                //}
                 label.DataContext = node;
                 label.Content = string.Format("({0}) {1}", node.Id, text);
                 Output.Add(label);
@@ -431,7 +455,7 @@ namespace DialogueMaker
                     label.Content = item.Content;
                     label.DataContext = item.DataContext;
                     label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                    label.MaxHeight = label.DesiredSize.Height;
+                    label.MaxHeight = LabelHeight;
                     NpcListTest.Items.Add(label);
                 }
             }
@@ -472,8 +496,7 @@ namespace DialogueMaker
                     var label = new Label();
                     label.Content = item.Content;
                     label.DataContext = item.DataContext;
-                    label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                    label.MaxHeight = label.DesiredSize.Height;
+                    label.MaxHeight = LabelHeight;
                     DialogueListTest.Items.Add(label);
                 }
             }
@@ -535,7 +558,7 @@ namespace DialogueMaker
             var NewNode = new Structs.Node() { Text = string.Format("New Dialogue({0})", NewItems.Count + 1), Id = NodeId };
             Label.Content = string.Format("New Dialogue({0})", NewItems.Count + 1);
             Label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            Label.MaxHeight = Label.DesiredSize.Height;
+            Label.MaxHeight = LabelHeight;
             Label.DataContext = NewNode;
             if (CurrentNPC.Nodes == null)
             {
@@ -610,6 +633,14 @@ namespace DialogueMaker
 
             CurrentNode = NextNode;
             SelectDialogue(NextNode);
+            foreach (Label label in DialogueList.Items)
+            {
+                if ((label.DataContext as Structs.Node).Id == NextNode.Id)
+                {
+                    ListViewItem item = DialogueList.ItemContainerGenerator.ContainerFromItem(label) as ListViewItem;
+                    item.Focus();
+                }
+            }
             LastTimeDialogueDeleted = DateTime.Now.ToUniversalTime();
         }
 
@@ -620,6 +651,19 @@ namespace DialogueMaker
                 if ((label.DataContext as Structs.Node).Id == node.Id)
                 {
                     DialogueList.SelectedItem = label;
+                }
+            }
+        }
+
+        private void SelectNPC(Structs.NPC npc)
+        {
+            foreach (Label label in NpcList.Items)
+            {
+                if ((label.DataContext as Structs.NPC).Name == npc.Name)
+                {
+                    NpcList.SelectedItem = label;
+                    ListViewItem item = NpcList.ItemContainerGenerator.ContainerFromItem(label) as ListViewItem;
+                    item.Focus();
                 }
             }
         }
@@ -674,7 +718,7 @@ namespace DialogueMaker
                     OldNodeIndex = CurrentNPC.Nodes.IndexOf(node);
             }
 
-            var ChoiceText = "Continue";
+            var ChoiceText = TextChoice;
             if (ConnectedButton.Text.Length > 0)
                 ChoiceText = ConnectedButton.Text.ToString();
             else if (ConnectedButton.Text.Length <= 0)
@@ -719,7 +763,7 @@ namespace DialogueMaker
                 ActuallIndex = Math.Min(comboBoxIndex, CurrentNode.Choices.Count);
             }
 
-            var SelectedData = new Structs.Node() { Id = -1, Next_id = -1, Text = string.Format("({0})", "Exit the Dialogue") };
+            var SelectedData = new Structs.Node() { Id = -1, Text = string.Format("({0})", "Exit the Dialogue") };
 
             if (ConnectedCombo.SelectedItem != null)
                 SelectedData = (Structs.Node)(ConnectedCombo.SelectedItem as Label).DataContext;
@@ -744,7 +788,7 @@ namespace DialogueMaker
                 return;
             }
 
-            var ChoiceText = "Continue";
+            var ChoiceText = TextChoice;
             if (ChoiceTextBox.Text.Length > 0)
                 ChoiceText = ChoiceTextBox.Text.ToString();
             else if (CurrentNode.Choices != null && CurrentNode.Choices.Count > ActuallIndex)
@@ -784,6 +828,18 @@ namespace DialogueMaker
             foreach (Label label in NpcList.Items.OfType<Label>())
             {
                 var Data = label.DataContext as Structs.NPC;
+
+                if (Data.Nodes == null)
+                    continue;
+
+                foreach (Structs.Node node in Data.Nodes)
+                {
+                    if (node.Choices == null)
+                    {
+                        node.Choices = new List<Structs.Choice> { new Structs.Choice() { Next_id = -1, Text = TextChoice } };
+                    }
+                }
+
                 Npcs.NPCS.Add(Data);
             }
             Npcs.Name = CurrentProject.Name;
@@ -860,7 +916,7 @@ namespace DialogueMaker
             label.Content = "(New)";
             label.DataContext = "New";
             label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            label.MaxHeight = label.DesiredSize.Height;
+            label.MaxHeight = LabelHeight;
             ProjectsBox.Items.Add(label);
 
             if (!Utils.UserDataPath.Exists)
@@ -879,7 +935,7 @@ namespace DialogueMaker
                 label.DataContext = ProjectData;
                 label.Content = ProjectData.Name;
                 label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                label.MaxHeight = label.DesiredSize.Height;
+                label.MaxHeight = LabelHeight;
                 ProjectsBox.Items.Add(label);
 
                 ProjectNameBox.Text = ProjectData.Name;
@@ -982,7 +1038,7 @@ namespace DialogueMaker
 
                         CurrentProject.Name = ProjectName;
 
-                        if(ExportPathBox.DataContext != null)
+                        if (ExportPathBox.DataContext != null)
                             CurrentProject.Exportpath = ExportPathBox.Text;
 
                         var NewDir = Directory.CreateDirectory(Path.Combine(Utils.UserDataPath.FullName, ProjectName));
@@ -1038,6 +1094,7 @@ namespace DialogueMaker
             if (CurrentProject == null)
             {
                 CreateNotification("Please select a Project first");
+                UnfocusElement.Focus();
                 return;
             }
 
@@ -1072,7 +1129,7 @@ namespace DialogueMaker
             {
                 ExportPathGotFocus(ExportPathBox, new RoutedEventArgs(GotFocusEvent));
             }
-            if (ExportPathBox.DataContext == null)
+            if (ExportPathBox.DataContext == null && CurrentProject.Exportpath == null)
                 return;
             File.WriteAllText(Path.Combine(CurrentProject.Exportpath, CurrentProject.Name + ".Json"), JsonSerializer.Serialize(GetCurrentProject()));
             CreateNotification("Project has been exported successfully");
@@ -1150,7 +1207,217 @@ namespace DialogueMaker
 
         private void MouseTabDrag(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-                this.DragMove();
+            this.DragMove();
+        }
+
+        private void AutoSaveTimePreviewInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void AutoSaveStateChanged(object sender, RoutedEventArgs e)
+        {
+            if (UserData == null && File.Exists(Path.Combine(Utils.UserDataPath.FullName, "UserData.json")))
+                return;
+
+            CheckBox check = sender as CheckBox;
+
+            AutoSaveState = check.IsChecked.Value;
+
+            SaveUserData();
+
+            if (AutoSavefunc == null)
+                AutoSavefunc = SetAutoSaveEvent(AutoSaveMinutes);
+        }
+
+        private void AutoSaveNotifClicked(object sender, RoutedEventArgs e)
+        {
+            CheckBox check = sender as CheckBox;
+
+            AutoSaveNotif = check.IsChecked.Value;
+
+            SaveUserData();
+        }
+
+        private void AutoSaveTimeChanged(object sender, TextChangedEventArgs e)
+        {
+            if (UserData == null && File.Exists(Path.Combine(Utils.UserDataPath.FullName, "UserData.json")))
+                return;
+
+            var AutoSaveBox = sender as TextBox;
+
+            if (AutoSaveBox.Text == "0")
+            {
+                //AutoSaveBox.Text = "1";
+                AutoSaveCheckBox.IsChecked = false;
+                AutoSaveCheckBox.IsEnabled = false;
+
+                AutoSaveMinutes = int.Parse(AutoSaveBox.Text);
+
+                SaveUserData();
+
+                return;
+            }
+            else if(AutoSaveBox.Text.Contains(" ") || AutoSaveBox.Text.Length <= 0)
+            {
+                AutoSaveCheckBox.IsChecked = false;
+                AutoSaveCheckBox.IsEnabled = false;
+
+                AutoSaveMinutes = 0;
+
+                SaveUserData();
+
+                return;
+            }
+
+            AutoSaveCheckBox.IsEnabled = true;
+
+            AutoSaveMinutes = int.Parse(AutoSaveBox.Text);
+
+            SaveUserData();
+
+            AutoSavefunc = SetAutoSaveEvent(AutoSaveMinutes);
+        }
+
+        private async Task SetAutoSaveEvent(int delay)
+        {
+            await Task.Delay(delay * 60000);
+            if (delay == AutoSaveMinutes)
+                AutoSave();
+            else
+                return;
+            _ = SetAutoSaveEvent(AutoSaveMinutes);
+        }
+
+        private void AutoSave()
+        {
+            if (CurrentProject == null || AutoSaveState == false)
+                return;
+
+            File.WriteAllText(Utils.GetProjectPath(CurrentProject.Name), JsonSerializer.Serialize(GetCurrentProject()));
+            if (AutoSaveNotif)
+                CreateNotification("All information has been saved (Autosave)");
+        }
+
+        private void SaveUserData()
+        {
+            var userData = new Structs.UserSettings();
+
+            userData.IsAutoSave = AutoSaveState;
+            userData.AutoSaveMinutes = AutoSaveMinutes;
+            userData.IsAutoSaveNotif = AutoSaveNotif;
+
+            userData.DefaultChoiceText = TextChoice;
+
+            UserData = userData;
+
+            File.WriteAllText(Path.Combine(Utils.UserDataPath.FullName, "UserData.json"), JsonSerializer.Serialize(userData));
+        }
+
+        private void ReadUserData()
+        {
+            if (!File.Exists(Path.Combine(Utils.UserDataPath.FullName, "UserData.json")))
+                return;
+
+            var UserDataString = System.IO.File.ReadAllText(Path.Combine(Utils.UserDataPath.FullName, "UserData.json"));
+
+            UserData = JsonSerializer.Deserialize<Structs.UserSettings>(UserDataString);
+
+            if (UserData.DefaultChoiceText == null)
+                UserData.DefaultChoiceText = "Continue";
+
+            AutoSaveState = UserData.IsAutoSave;
+            AutoSaveMinutes = UserData.AutoSaveMinutes;
+            AutoSaveNotif = UserData.IsAutoSaveNotif;
+            TextChoice = UserData.DefaultChoiceText;
+
+            AutoSaveCheckBox.IsChecked = UserData.IsAutoSave;
+            AutoSaveTextBox.Text = UserData.AutoSaveMinutes.ToString();
+            AutoSaveNotifBox.IsChecked = UserData.IsAutoSaveNotif;
+            DefChoiceTextBox.Text = UserData.DefaultChoiceText;
+
+            return;
+        }
+
+        private void NpcSearchBoxChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string SearchQuery = textBox.Text.ToLower();
+
+            CurrentProject = GetCurrentProject();
+
+            foreach (Label label in NpcList.Items)
+            {
+                if (label.Content.ToString().ToLower().Contains(SearchQuery))
+                {
+                    NpcList.SelectedItem = label;
+                }
+            }
+        }
+
+        private void DialogueSearchBoxChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string SearchQuery = textBox.Text.ToLower();
+
+            CurrentProject = GetCurrentProject();
+
+            foreach (Label label in DialogueList.Items)
+            {
+                if (label.Content.ToString().ToLower().Contains(SearchQuery))
+                {
+                    DialogueList.SelectedItem = label;
+                }
+            }
+        }
+
+        private void ProjectNameKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if(e.Key == System.Windows.Input.Key.Enter)
+            {
+                CreateProjectClicked(null, null);
+
+                UnfocusElement.Focus();
+            }
+        }
+
+        private void UnFocusOnEnter(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                UnfocusElement.Focus();
+                if (sender == NpcNameBox)
+                {
+                    NameChanged(sender, new System.Windows.Controls.TextChangedEventArgs(e.RoutedEvent, UndoAction.Undo));
+                }
+            }
+        }
+
+        private void NpcNameBoxLostFocus(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e)
+        {
+            NameChanged(sender, new System.Windows.Controls.TextChangedEventArgs(e.RoutedEvent, UndoAction.Undo));
+        }
+
+        private void DefaultTextChoiceChanged(object sender, TextChangedEventArgs e)
+        {
+            var ChoiceTextBox = sender as TextBox;
+            var text = ChoiceTextBox.Text;
+
+            if (text == "Continue")
+                return;
+
+            TextChoice = text;
+
+            SaveUserData();
+        }
+
+        private void WindowKeyPressed(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if(Keyboard.IsKeyDown(Key.LeftCtrl) && Keyboard.IsKeyDown(Key.S))
+            {
+                SaveClicked(sender, null);
+            }
         }
     }
 }

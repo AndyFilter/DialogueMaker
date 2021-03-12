@@ -18,7 +18,7 @@ namespace DialogueMaker.Controls
 
         private async void TimeControl()
         {
-            await Task.Delay(4500);
+            await Task.Delay(4600);
 
             var parent = this.Parent as DockPanel;
 

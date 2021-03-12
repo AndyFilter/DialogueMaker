@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DialogueMaker"
         mc:Ignorable="d"
-        Title="Dialogue Maker" Height="500
-        " Width="900" MinWidth="900" MinHeight="450" Icon="/media/DialogueMaker.ico" WindowStyle="None" Visibility="Visible" ResizeMode="CanResize" AllowsTransparency="True">
+        Title="Dialogue Maker" x:Name="window1"
+        Height="500" Width="900" MinWidth="900" MinHeight="450" Icon="/media/DialogueMaker.ico" WindowStyle="None" Visibility="Visible" ResizeMode="CanResize" AllowsTransparency="True" KeyDown="WindowKeyPressed">
     <WindowChrome.WindowChrome>
         <WindowChrome CornerRadius="15" ResizeBorderThickness="8" GlassFrameThickness="5" UseAeroCaptionButtons="False" CaptionHeight="0"/>
     </WindowChrome.WindowChrome>
@@ -38,7 +38,7 @@
                     </StackPanel>
                 </Grid>
             </Border>
-            <TabControl x:Name="TabCrl" Background="{x:Null}" BorderThickness="0,1,0,0" Margin="0,35,0,0">
+            <TabControl x:Name="TabCrl" Background="{x:Null}" BorderThickness="0,1,0,0" Margin="0,35,0,0"  TabStripPlacement="Top">
                 <TabItem Header="Project">
                     <DockPanel Margin="25,10,25,10">
                         <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch" Orientation="Horizontal">
@@ -50,7 +50,7 @@
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="20,0,0,0">
                                 <Label Content="Name:"/>
-                                <TextBox x:Name="ProjectNameBox" Text="" MinWidth="150" MaxLines="1" TextWrapping="NoWrap" MaxWidth="450" InputScope="FileName" Template="{StaticResource TextBoxBaseControlTemplate}"/>
+                                <TextBox x:Name="ProjectNameBox" Text="" MinWidth="150" MaxLines="1" TextWrapping="NoWrap" MaxWidth="450" InputScope="FileName" Template="{StaticResource TextBoxBaseControlTemplate}" KeyDown="ProjectNameKeyDown"/>
                             </StackPanel>
                             <Button x:Name="ProjectCreate" Content="Create" Margin="20,0,20,0" VerticalAlignment="Bottom" IsEnabled="False" Click="CreateProjectClicked" Style="{StaticResource NormalButton}"/>
                         </StackPanel>
@@ -79,38 +79,82 @@
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
-                            <Label Content="Npc:"/>
-                            <ListView Name="NpcList" HorizontalAlignment="Stretch" MinWidth="180" VerticalContentAlignment="Center" Grid.Row="1" MaxWidth="150" SelectionChanged="NewNpcSelected" SelectionMode="Single" HorizontalContentAlignment="Stretch">
-                            </ListView>
-                            <Button x:Name="NpcListAdd" Content="Add new NPC" VerticalAlignment="Bottom" Grid.Row="2" Click="NewNpcClicked" Style="{StaticResource NormalButton}" Margin="0,5,0,0"/>
+                            <Label Content="NPC:"/>
+                            <!--<Grid Grid.Row="1">
+                                <Grid.OpacityMask>
+                                    <VisualBrush Visual="{Binding ElementName=clipMask}" Stretch="None" />
+                                </Grid.OpacityMask>
+                                <Border x:Name="clipMask" Background="White" CornerRadius="10" />-->
+                            <ListView Name="NpcList" HorizontalAlignment="Stretch" MinWidth="180" VerticalContentAlignment="Center" Grid.Row="1" MaxWidth="180" SelectionChanged="NewNpcSelected" SelectionMode="Single" HorizontalContentAlignment="Stretch"/>
+                            <!--</Grid>-->
+                            <Grid Margin="0,5,0,0" Grid.Row="2">
+                                <TextBox x:Name="NpcSearchBox" Text="" MaxLines="1" TextWrapping="NoWrap" InputScope="FileName" Template="{StaticResource TextBoxBaseControlTemplate}" Grid.Row="2" HorizontalAlignment="Stretch" TextChanged="NpcSearchBoxChanged"/>
+                                <Label IsHitTestVisible="False" Content="Search for a NPC" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="5,0,0,0" Foreground="DarkGray" Opacity="0.5" FontSize="14" VerticalContentAlignment="Center">
+                                    <Label.Style>
+                                        <Style TargetType="{x:Type Label}">
+                                            <Setter Property="FontSize" Value="14"/>
+                                            <Setter Property="FontFamily" Value="Montserrat Medium"/>
+                                            <Setter Property="Foreground" Value="#e4ebea"/>
+                                            <Setter Property="Padding" Value="2"/>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, ElementName=NpcSearchBox}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Label.Style>
+                                </Label>
+                            </Grid>
+                            <Button x:Name="NpcListAdd" Content="Add new NPC" VerticalAlignment="Bottom" Grid.Row="3" Click="NewNpcClicked" Style="{StaticResource NormalButton}" Margin="0,5,0,0"/>
                         </Grid>
                         <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="20,0,0,0" Width="180">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
                             <Label Content="Dialogue:"/>
-                            <ListView Name="DialogueList" HorizontalAlignment="Left" MinWidth="180" VerticalContentAlignment="Center" Grid.Row="1" SelectionChanged="NewDialogueSelected" Width="150" MaxWidth="150" SelectionMode="Single">
-                            </ListView>
-                            <Button x:Name="DialogueListAdd" Content="Add new Dialogue" VerticalAlignment="Bottom" Grid.Row="2" Click="NewDialogueClicked" Style="{StaticResource NormalButton}" Margin="0,5,0,0"/>
+                            <ListView Name="DialogueList" HorizontalAlignment="Stretch" MinWidth="180" VerticalContentAlignment="Center" Grid.Row="1" MaxWidth="180" SelectionChanged="NewDialogueSelected" SelectionMode="Single" HorizontalContentAlignment="Stretch"/>
+                            <Grid Margin="0,5,0,0" Grid.Row="2">
+                                <TextBox x:Name="DialogueSearchBox" Text="" MaxLines="1" TextWrapping="NoWrap" InputScope="FileName" Template="{StaticResource TextBoxBaseControlTemplate}" Grid.Row="2" HorizontalAlignment="Stretch" TextChanged="DialogueSearchBoxChanged"/>
+                                <Label IsHitTestVisible="False" Content="Search for a Dialogue" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="5,0,0,0" Foreground="DarkGray" Opacity="0.5" FontSize="14" VerticalContentAlignment="Center">
+                                    <Label.Style>
+                                        <Style TargetType="{x:Type Label}">
+                                            <Setter Property="FontSize" Value="14"/>
+                                            <Setter Property="FontFamily" Value="Montserrat Medium"/>
+                                            <Setter Property="Foreground" Value="#e4ebea"/>
+                                            <Setter Property="Padding" Value="2"/>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, ElementName=DialogueSearchBox}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Label.Style>
+                                </Label>
+                            </Grid>
+                            <Button x:Name="DialogueListAdd" Content="Add new Dialogue" VerticalAlignment="Bottom" Grid.Row="3" Click="NewDialogueClicked" Style="{StaticResource NormalButton}" Margin="0,5,0,0"/>
                         </Grid>
                         <Grid VerticalAlignment="Stretch" Margin="20,0,0,0" HorizontalAlignment="Stretch">
                             <DockPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                 <StackPanel Margin="0,0,20,0">
                                     <Label Content="Name:"/>
-                                    <TextBox x:Name="NpcNameBox" MinWidth="100" MaxLines="1" Width="150" InputScope="PersonalGivenName" TextChanged="NameChanged" Template="{StaticResource TextBoxBaseControlTemplate}"/>
+                                    <TextBox x:Name="NpcNameBox" MinWidth="100" MaxLines="1" Width="150" InputScope="PersonalGivenName" Template="{StaticResource TextBoxBaseControlTemplate}" KeyDown="UnFocusOnEnter" LostKeyboardFocus="NpcNameBoxLostFocus"/>
                                 </StackPanel>
                                 <StackPanel Margin="0,0,20,0">
                                     <Label Content="Type:"/>
-                                    <ComboBox x:Name="NpcTypeBox" ItemsSource="{Binding NpcType}" SelectionChanged="TypeChanged" MinWidth="140">
+                                    <ComboBox x:Name="NpcTypeBox" SelectionChanged="TypeChanged" MinWidth="140">
                                         <ComboBoxItem IsSelected="True">Foreground</ComboBoxItem>
                                         <ComboBoxItem>Background</ComboBoxItem>
                                     </ComboBox>
                                 </StackPanel>
                                 <Grid VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                                    <Button x:Name="DeleteNpcButton" Content="Delete Npc" HorizontalAlignment="Right" VerticalAlignment="Stretch" Click="DeleteNpcClicked" Style="{StaticResource DeleteButton}"/>
+                                    <Button x:Name="DeleteNpcButton" Content="Delete NPC" HorizontalAlignment="Right" VerticalAlignment="Stretch" Click="DeleteNpcClicked" Style="{StaticResource DeleteButton}"/>
                                 </Grid>
                             </DockPanel>
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,60,0,0" DockPanel.Dock="Top">
@@ -135,19 +179,19 @@
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
                                         <StackPanel Orientation="Vertical">
-                                            <TextBox x:Name="ButtonBox1" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged" Template="{StaticResource TextBoxBaseControlTemplate}"/>
+                                            <TextBox x:Name="ButtonBox1" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged" Template="{StaticResource TextBoxBaseControlTemplate}" KeyDown="UnFocusOnEnter"/>
                                             <ComboBox x:Name="ButtonCombo1" SelectionChanged="NextNodeChanged"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="2" >
-                                            <TextBox x:Name="ButtonBox2" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged" Template="{StaticResource TextBoxBaseControlTemplate}"/>
+                                            <TextBox x:Name="ButtonBox2" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged" Template="{StaticResource TextBoxBaseControlTemplate}" KeyDown="UnFocusOnEnter"/>
                                             <ComboBox x:Name="ButtonCombo2" SelectionChanged="NextNodeChanged"/>
                                         </StackPanel>
                                         <StackPanel Grid.Row="2">
-                                            <TextBox x:Name="ButtonBox3" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged" Template="{StaticResource TextBoxBaseControlTemplate}"/>
+                                            <TextBox x:Name="ButtonBox3" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged" Template="{StaticResource TextBoxBaseControlTemplate}" KeyDown="UnFocusOnEnter"/>
                                             <ComboBox x:Name="ButtonCombo3" SelectionChanged="NextNodeChanged"/>
                                         </StackPanel>
                                         <StackPanel  Grid.Column="2" Grid.Row="2">
-                                            <TextBox x:Name="ButtonBox4" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged" Template="{StaticResource TextBoxBaseControlTemplate}"/>
+                                            <TextBox x:Name="ButtonBox4" Text="" Margin="0,0,0,5" TextChanged="ChoiceTextChanged" Template="{StaticResource TextBoxBaseControlTemplate}" KeyDown="UnFocusOnEnter"/>
                                             <ComboBox x:Name="ButtonCombo4" SelectionChanged="NextNodeChanged"/>
                                         </StackPanel>
                                     </Grid>
@@ -164,15 +208,15 @@
                         </Grid>
                     </DockPanel>
                 </TabItem>
-                <TabItem Header="Test">
+                <TabItem Header="Test" >
                     <DockPanel Margin="15,10,15,10">
                         <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10,0,0,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <Label Content="Npc:"/>
-                            <ListView Name="NpcListTest" HorizontalAlignment="Left" MinWidth="180" VerticalContentAlignment="Center" Grid.Row="1" Width="150" MaxWidth="180" SelectionMode="Single" SelectedIndex="{Binding SelectedIndex, ElementName=NpcList, Mode=TwoWay}">
+                            <Label Content="NPC:"/>
+                            <ListView Name="NpcListTest" HorizontalAlignment="Stretch" MinWidth="180" VerticalContentAlignment="Center" Grid.Row="1" MaxWidth="180" SelectionMode="Single" SelectedIndex="{Binding SelectedIndex, ElementName=NpcList, Mode=TwoWay}">
                             </ListView>
                         </Grid>
                         <Grid HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="20,0,0,0">
@@ -213,14 +257,29 @@
                         </Grid>
                     </DockPanel>
                 </TabItem>
+                <TabItem Header="Settings" HorizontalAlignment="Right">
+                    <DockPanel Margin="25,10,25,10">
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,0,0" DockPanel.Dock="Top">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <CheckBox x:Name="AutoSaveCheckBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" Click="AutoSaveStateChanged" IsChecked="True" />
+                                <Label Content="Auto Save" Margin="5,0,0,0"/>
+                                <CheckBox x:Name="AutoSaveNotifBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" IsChecked="True" Margin="10,0,0,0" Click="AutoSaveNotifClicked" />
+                                <Label Content="Notify when Auto Saving" Margin="5,0,0,0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                <Label Content="Save every (minutes):" VerticalAlignment="Center"/>
+                                <TextBox x:Name="AutoSaveTextBox" Template="{StaticResource TextBoxBaseControlTemplate}" MinWidth="75" InputScope="Digits" PreviewTextInput="AutoSaveTimePreviewInput" MaxWidth="100" MaxLines="1" TextChanged="AutoSaveTimeChanged" KeyDown="UnFocusOnEnter" Text="1"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,20,0,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ToolTip="Note that this will only affect the newly created choices">
+                                <Label Content="Default choice text:" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                <TextBox x:Name="DefChoiceTextBox" Template="{StaticResource TextBoxBaseControlTemplate}" MinWidth="150" MaxWidth="200" MaxLines="1" KeyDown="UnFocusOnEnter" Text="Continue" TextChanged="DefaultTextChoiceChanged"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </DockPanel>
+                </TabItem>
             </TabControl>
-            <Popup Name="myPopup">
-                <TextBlock Name="myPopupText" 
-                 Background="LightBlue" 
-                 Foreground="Blue">
-        Popup Text
-                </TextBlock>
-            </Popup>
             <TextBox Width="0" Height="0" x:Name="UnfocusElement" />
             <DockPanel x:Name="NotificationPanel" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="400" Width="200" Margin="0,0,5,0"/>
         </Grid>

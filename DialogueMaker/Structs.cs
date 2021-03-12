@@ -21,7 +21,6 @@ namespace DialogueMaker
         {
             public int Id { get; set; }
             public string Text { get; set; }
-            public int Next_id { get; set; }
             public List<Choice> Choices { get; set; }
         }
         public class Choice
@@ -40,6 +39,14 @@ namespace DialogueMaker
             Alert,
             Warning,
             Information
+        }
+
+        public class UserSettings
+        {
+            public bool IsAutoSave { get; set; }
+            public bool IsAutoSaveNotif { get; set; }
+            public int AutoSaveMinutes { get; set; }
+            public string DefaultChoiceText { get; set; }
         }
     }
 }
