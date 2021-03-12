@@ -1312,7 +1312,8 @@ namespace DialogueMaker
 
             UserData = userData;
 
-            File.WriteAllText(Path.Combine(Utils.UserDataPath.FullName, "UserData.json"), JsonSerializer.Serialize(userData));
+            if(Directory.Exists(Utils.UserDataPath.FullName))
+                File.WriteAllText(Path.Combine(Utils.UserDataPath.FullName, "UserData.json"), JsonSerializer.Serialize(userData));
         }
 
         private void ReadUserData()
