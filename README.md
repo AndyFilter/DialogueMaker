@@ -139,7 +139,7 @@ get_tree().get_current_scene().call_deferred("add_child", DialBox) #Adds the Dia
  - ~~Auto-Save function~~
  - ~~Search function (For NPC and Dialogue)~~
  - ~~Json object instructions to [README.md](https://github.com/AndyFilter/DialogueMaker/blob/main/README.md)~~
- - Customization ~~and user settings~~
+ - ~~Customization and user settings~~
 
 # Pull requests
 Feel free to do pull requests, and edit the code hoverer You like. The software is distributed under a **MIT license**.

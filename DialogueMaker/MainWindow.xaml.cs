@@ -33,6 +33,7 @@ namespace DialogueMaker
         private bool AutoSaveState = true;
         private bool AutoSaveNotif = true;
         private int AutoSaveMinutes = 1;
+        private Structs.Styles Style = Structs.Styles.Dark;
 
         private string TextChoice = "Continue";
 
@@ -949,8 +950,8 @@ namespace DialogueMaker
                 }
             }
 
-            //if(ProjectsBox.Items.Count > 1)
-            //    ProjectsBox.SelectedIndex = 1;
+            if (ProjectsBox.Items.Count <= 1)
+                ProjectsBox.SelectedIndex = 0;
         }
 
         private void ProjectSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -997,7 +998,10 @@ namespace DialogueMaker
                 SelectedProj = (Structs.Project)(ProjectsBox.SelectedItem as Label).DataContext;
 
             if (ProjectName.Length <= 0)
+            {
+                CreateNotification("Please enter a name for your Project first");
                 return;
+            }
 
             if (!Utils.UserDataPath.GetDirectories().Any(s => ProjectName.Equals(s.Name)) && ProjectCreate.Content.ToString() == "Create")
             {
@@ -1124,7 +1128,10 @@ namespace DialogueMaker
         private void ExportClicked(object sender, RoutedEventArgs e)
         {
             if (CurrentProject == null)
+            {
+                CreateNotification("Please select a Project first");
                 return;
+            }
             if (CurrentProject.Exportpath == null)
             {
                 ExportPathGotFocus(ExportPathBox, new RoutedEventArgs(GotFocusEvent));
@@ -1156,6 +1163,8 @@ namespace DialogueMaker
                 DialogueList.Items.Clear();
                 ClearAll();
                 CreateNotification("Project has been deleted");
+                if (ProjectsBox.Items.Count <= 1)
+                    ProjectsBox.SelectedIndex = 0;
             }
             else
                 return;
@@ -1190,10 +1199,12 @@ namespace DialogueMaker
             switch (WindowState)
             {
                 case WindowState.Maximized:
+                    WindowBorder.Margin = new Thickness(0);
                     this.WindowState = WindowState.Normal;
                     button.Content = "◻";
                     break;
                 case WindowState.Normal:
+                    WindowBorder.Margin = new Thickness(5);
                     this.WindowState = WindowState.Maximized;
                     button.Content = "❏";
                     break;
@@ -1307,6 +1318,7 @@ namespace DialogueMaker
             userData.IsAutoSave = AutoSaveState;
             userData.AutoSaveMinutes = AutoSaveMinutes;
             userData.IsAutoSaveNotif = AutoSaveNotif;
+            userData.Style = Style;
 
             userData.DefaultChoiceText = TextChoice;
 
@@ -1332,11 +1344,15 @@ namespace DialogueMaker
             AutoSaveMinutes = UserData.AutoSaveMinutes;
             AutoSaveNotif = UserData.IsAutoSaveNotif;
             TextChoice = UserData.DefaultChoiceText;
+            Style = UserData.Style;
 
             AutoSaveCheckBox.IsChecked = UserData.IsAutoSave;
             AutoSaveTextBox.Text = UserData.AutoSaveMinutes.ToString();
             AutoSaveNotifBox.IsChecked = UserData.IsAutoSaveNotif;
             DefChoiceTextBox.Text = UserData.DefaultChoiceText;
+            DarkModeCheckBox.IsChecked = UserData.Style == Structs.Styles.Dark;
+
+            SetStyle(Style);
 
             return;
         }
@@ -1418,6 +1434,68 @@ namespace DialogueMaker
             if(Keyboard.IsKeyDown(Key.LeftCtrl) && Keyboard.IsKeyDown(Key.S))
             {
                 SaveClicked(sender, null);
+            }
+        }
+
+        private void SetStyle(Structs.Styles style)
+        {
+            switch (style)
+            {
+                case Structs.Styles.Dark:
+                    Resources.MergedDictionaries[0]["BackgroundColor"] = ColorConverter.ConvertFromString("#191D1E");
+                    Resources.MergedDictionaries[0]["LightBackgroundColor"] = ColorConverter.ConvertFromString("#3B3B3B");
+                    Resources.MergedDictionaries[0]["SecondaryLightColor"] = ColorConverter.ConvertFromString("#28CA6C");
+                    Resources.MergedDictionaries[0]["SecondaryDarkColor"] = ColorConverter.ConvertFromString("#00C1E8");
+                    Resources.MergedDictionaries[0]["SecondaryColor"] = ColorConverter.ConvertFromString("#585858");
+                    Resources.MergedDictionaries[0]["DefaultFontColor"] = ColorConverter.ConvertFromString("#F0F0F0");
+                    //Colors below are the same in Dark and Light/Color mode
+                    Resources.MergedDictionaries[0]["HoverGradientStartButtonColor"] = ColorConverter.ConvertFromString("#E040FB");
+                    Resources.MergedDictionaries[0]["DefaultButtonBackgroundColor"] = ColorConverter.ConvertFromString("#47D48D");
+                    Resources.MergedDictionaries[0]["DefaultButtonBackgroundHoverColor"] = ColorConverter.ConvertFromString("#589371");
+                    Resources.MergedDictionaries[0]["ButtonColorColor"] = ColorConverter.ConvertFromString("#28CA6C");
+                    Resources.MergedDictionaries[0]["HoverButtonColor"] = ColorConverter.ConvertFromString("#45DE7E");
+                    Resources.MergedDictionaries[0]["DeleteButtonColorColor"] = ColorConverter.ConvertFromString("#FF424C");
+                    Resources.MergedDictionaries[0]["DeleteButtonColorHoverColor"] = ColorConverter.ConvertFromString("#FC5C65");
+                    Resources.MergedDictionaries[0]["GradientStartButtonColor"] = ColorConverter.ConvertFromString("#E040FB");
+                    Resources.MergedDictionaries[0]["GradientStopButtonColor"] = ColorConverter.ConvertFromString("#AD1457");
+                    Resources.MergedDictionaries[0]["NotifWarningColor"] = ColorConverter.ConvertFromString("#DA4167");
+                    break;
+                case Structs.Styles.Light:
+                    Resources.MergedDictionaries[0]["BackgroundColor"] = ColorConverter.ConvertFromString("#F0F0F0");
+                    Resources.MergedDictionaries[0]["LightBackgroundColor"] = ColorConverter.ConvertFromString("#08BDBD");
+                    Resources.MergedDictionaries[0]["SecondaryLightColor"] = ColorConverter.ConvertFromString("#FFA400");
+                    Resources.MergedDictionaries[0]["SecondaryDarkColor"] = ColorConverter.ConvertFromString("#561643");
+                    Resources.MergedDictionaries[0]["SecondaryColor"] = ColorConverter.ConvertFromString("#0BD0D0");
+                    Resources.MergedDictionaries[0]["DefaultFontColor"] = ColorConverter.ConvertFromString("#191D1E");
+                    //Colors below are the same in Dark and Light/Color mode
+                    Resources.MergedDictionaries[0]["HoverGradientStartButtonColor"] = ColorConverter.ConvertFromString("#E040FB");
+                    Resources.MergedDictionaries[0]["DefaultButtonBackgroundColor"] = ColorConverter.ConvertFromString("#47D48D");
+                    Resources.MergedDictionaries[0]["DefaultButtonBackgroundHoverColor"] = ColorConverter.ConvertFromString("#589371");
+                    Resources.MergedDictionaries[0]["ButtonColorColor"] = ColorConverter.ConvertFromString("#8FB339");
+                    Resources.MergedDictionaries[0]["HoverButtonColor"] = ColorConverter.ConvertFromString("#9FA349");
+                    Resources.MergedDictionaries[0]["DeleteButtonColorColor"] = ColorConverter.ConvertFromString("#FF424C");
+                    Resources.MergedDictionaries[0]["DeleteButtonColorHoverColor"] = ColorConverter.ConvertFromString("#FC5C65");
+                    Resources.MergedDictionaries[0]["GradientStartButtonColor"] = ColorConverter.ConvertFromString("#E040FB");
+                    Resources.MergedDictionaries[0]["GradientStopButtonColor"] = ColorConverter.ConvertFromString("#AD1457");
+                    Resources.MergedDictionaries[0]["NotifWarningColor"] = ColorConverter.ConvertFromString("#DA4167");
+                    break;
+            }
+        }
+
+        private void DarkModeCheckBoxClicked(object sender, RoutedEventArgs e)
+        {
+            bool isChecked = (bool)(sender as CheckBox).IsChecked;
+            if (isChecked)
+            {
+                SetStyle(Structs.Styles.Dark);
+                Style = Structs.Styles.Dark;
+                SaveUserData();
+            }
+            else
+            {
+                SetStyle(Structs.Styles.Light);
+                Style = Structs.Styles.Light;
+                SaveUserData();
             }
         }
     }

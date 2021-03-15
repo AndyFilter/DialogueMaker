@@ -47,6 +47,13 @@ namespace DialogueMaker
             public bool IsAutoSaveNotif { get; set; }
             public int AutoSaveMinutes { get; set; }
             public string DefaultChoiceText { get; set; }
+            public Styles Style { get; set; }
+        }
+
+        public enum Styles
+        {
+            Dark,
+            Light
         }
     }
 }
