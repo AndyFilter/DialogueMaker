@@ -33,7 +33,7 @@ namespace DialogueMaker
         private bool AutoSaveState = true;
         private bool AutoSaveNotif = true;
         private int AutoSaveMinutes = 1;
-        private Structs.Styles Style = Structs.Styles.Dark;
+        private new Structs.Styles Style = Structs.Styles.Dark;
 
         private string TextChoice = "Continue";
 
@@ -44,6 +44,11 @@ namespace DialogueMaker
         private class NotificationData
         {
             public string NotiText { get; set; }
+        }
+
+        private class TypesData
+        {
+            public string Type { get; set; }
         }
 
         private int LabelHeight = 25;
@@ -131,10 +136,16 @@ namespace DialogueMaker
             ButtonCombo2.ItemsSource = "";
             ButtonCombo3.ItemsSource = "";
             ButtonCombo4.ItemsSource = "";
-            foreach (ComboBoxItem type in NpcTypeBox.Items)
+
+            foreach (TypesData type in NpcTypeBox.Items)
             {
-                if (type.Content.ToString() == CurrentNPC.Type)
-                    type.IsSelected = true;
+                if (type.Type == CurrentNPC.Type)
+                    NpcTypeBox.SelectedItem = type;
+            }
+
+            if (NpcTypeBox.SelectedItem != null && ((TypesData)NpcTypeBox.SelectedItem).Type != CurrentNPC.Type)
+            {
+                NpcTypeBox.SelectedIndex = -1;
             }
 
             if (CurrentNPC == null || CurrentNPC.Nodes == null)
@@ -167,11 +178,23 @@ namespace DialogueMaker
             NpcNameBox.Text = Npc.Name;
             DialogueBox.Text = Node.Text;
             DialogueText.Text = Node.Text;
-            foreach (ComboBoxItem type in NpcTypeBox.Items)
+
+            //UpdateNpcTypes();
+            //NpcTypeBox.Items.Clear();
+            //CurrentProject.NpcTypes.ForEach(a => NpcTypeBox.Items.Add(a));
+
+            foreach (TypesData type in NpcTypeBox.Items)
             {
-                if (type.Content.ToString() == Npc.Type)
-                    type.IsSelected = true;
+                if (type.Type == Npc.Type)
+                    NpcTypeBox.SelectedItem = type;
+                //NpcTypeBox.Items[NpcTypeBox.Items.IndexOf(type)] = true;
             }
+
+            if (((TypesData)NpcTypeBox.SelectedItem).Type != Npc.Type)
+            {
+                NpcTypeBox.SelectedIndex = -1;
+            }
+
             SetButtons(Node);
         }
 
@@ -588,9 +611,9 @@ namespace DialogueMaker
 
         private void TypeChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (CurrentNPC == null || NpcList.SelectedItem == null)
+            if (CurrentNPC == null || NpcList.SelectedItem == null || e.AddedItems.Count <= 0)
                 return;
-            var SelectionText = (e.AddedItems[0] as ComboBoxItem).Content as string;
+            var SelectionText = (e.AddedItems[0] as TypesData).Type;
             CurrentNPC.Type = SelectionText;
             ((NpcList.SelectedItem as Label).DataContext as Structs.NPC).Type = SelectionText;
         }
@@ -843,6 +866,12 @@ namespace DialogueMaker
 
                 Npcs.NPCS.Add(Data);
             }
+
+            foreach (TypesData type in NpcTypesList.Items)
+            {
+                Npcs.NpcTypes.Add(type.Type);
+            }
+
             Npcs.Name = CurrentProject.Name;
             Npcs.Exportpath = CurrentProject.Exportpath;
             Npcs.Importpath = CurrentProject.Importpath;
@@ -932,6 +961,11 @@ namespace DialogueMaker
 
                 var ProjectData = JsonSerializer.Deserialize<Structs.Project>(FileText);
 
+                if(ProjectData.NpcTypes.Count <= 0)
+                {
+                    ProjectData.NpcTypes = new List<string>() { "Foreground", "Background" };
+                }
+
                 label = new Label();
                 label.DataContext = ProjectData;
                 label.Content = ProjectData.Name;
@@ -978,6 +1012,12 @@ namespace DialogueMaker
 
             var SelectedData = SelectedItem.DataContext as Structs.Project;
 
+            foreach (string type in SelectedData.NpcTypes)
+            {
+                NpcTypesList.Items.Add(new TypesData() { Type = type });
+                NpcTypeBox.Items.Add(new TypesData() { Type = type });
+            }
+
             if (SelectedData.Exportpath != null)
                 ExportPathBox.Text = SelectedData.Exportpath;
             else
@@ -1017,6 +1057,10 @@ namespace DialogueMaker
                 label.MaxHeight = label.DesiredSize.Height;
                 ProjectsBox.Items.Add(label);
                 ProjectsBox.SelectedItem = label;
+
+                NpcTypesList.Items.Add(new TypesData(){ Type = "Foreground"});
+                NpcTypesList.Items.Add(new TypesData(){ Type = "Background"});
+                UpdateNpcTypes();
 
                 SetData();
 
@@ -1186,6 +1230,7 @@ namespace DialogueMaker
             NpcNameBox.Text = "";
             DialogueBox.Text = "";
             DialogueText.Text = "";
+            NpcTypesList.Items.Clear();
         }
 
         private void MinimalizeClicked(object sender, RoutedEventArgs e)
@@ -1445,7 +1490,7 @@ namespace DialogueMaker
                     Resources.MergedDictionaries[0]["BackgroundColor"] = ColorConverter.ConvertFromString("#191D1E");
                     Resources.MergedDictionaries[0]["LightBackgroundColor"] = ColorConverter.ConvertFromString("#3B3B3B");
                     Resources.MergedDictionaries[0]["SecondaryLightColor"] = ColorConverter.ConvertFromString("#28CA6C");
-                    Resources.MergedDictionaries[0]["SecondaryDarkColor"] = ColorConverter.ConvertFromString("#00C1E8");
+                    Resources.MergedDictionaries[0]["SecondaryDarkColor"] = ColorConverter.ConvertFromString("#4F4F4F");
                     Resources.MergedDictionaries[0]["SecondaryColor"] = ColorConverter.ConvertFromString("#585858");
                     Resources.MergedDictionaries[0]["DefaultFontColor"] = ColorConverter.ConvertFromString("#F0F0F0");
                     //Colors below are the same in Dark and Light/Color mode
@@ -1464,8 +1509,8 @@ namespace DialogueMaker
                     Resources.MergedDictionaries[0]["BackgroundColor"] = ColorConverter.ConvertFromString("#F0F0F0");
                     Resources.MergedDictionaries[0]["LightBackgroundColor"] = ColorConverter.ConvertFromString("#08BDBD");
                     Resources.MergedDictionaries[0]["SecondaryLightColor"] = ColorConverter.ConvertFromString("#FFA400");
-                    Resources.MergedDictionaries[0]["SecondaryDarkColor"] = ColorConverter.ConvertFromString("#561643");
-                    Resources.MergedDictionaries[0]["SecondaryColor"] = ColorConverter.ConvertFromString("#0BD0D0");
+                    Resources.MergedDictionaries[0]["SecondaryDarkColor"] = ColorConverter.ConvertFromString("#6A1E54");
+                    Resources.MergedDictionaries[0]["SecondaryColor"] = ColorConverter.ConvertFromString("#84396F");
                     Resources.MergedDictionaries[0]["DefaultFontColor"] = ColorConverter.ConvertFromString("#191D1E");
                     //Colors below are the same in Dark and Light/Color mode
                     Resources.MergedDictionaries[0]["HoverGradientStartButtonColor"] = ColorConverter.ConvertFromString("#E040FB");
@@ -1497,6 +1542,48 @@ namespace DialogueMaker
                 Style = Structs.Styles.Light;
                 SaveUserData();
             }
+        }
+
+        private void NewTypeClicked(object sender, RoutedEventArgs e)
+        {
+            NpcTypesList.Items.Add(new TypesData() { Type = "Type" });
+            CurrentProject.NpcTypes.Add("Type");
+            NpcTypeBox.Items.Add(new TypesData() { Type = "Type" });
+        }
+
+        private void RemoveTypeClicked(object sender, RoutedEventArgs e)
+        {
+            Button btn = (Button)sender;
+
+            foreach(TypesData type in NpcTypesList.Items)
+            {
+                if (type == (TypesData)btn.Tag)
+                {
+                    NpcTypesList.Items.Remove(type);
+                    NpcTypeBox.Items.Remove((TypesData)btn.Tag);
+                    break;
+                }
+            }
+
+            CurrentProject.NpcTypes.Remove(((TypesData)btn.Tag).Type);
+
+            UpdateNpcTypes();
+        }
+
+        private void UpdateNpcTypes()
+        {
+            CurrentProject.NpcTypes = new List<string>();
+            NpcTypeBox.Items.Clear();
+            foreach (TypesData type in NpcTypesList.Items)
+            {
+                CurrentProject.NpcTypes.Add(type.Type);
+                NpcTypeBox.Items.Add(type);
+            }
+        }
+
+        private void TypeTextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateNpcTypes();
         }
     }
 }

@@ -9,6 +9,7 @@ namespace DialogueMaker
             public string Name { get; set; }
             public string Exportpath { get; set; }
             public string Importpath { get; set; }
+            public List<string> NpcTypes { get; set; } = new List<string>();
             public List<NPC> NPCS { get; set; }
         }
         public class NPC

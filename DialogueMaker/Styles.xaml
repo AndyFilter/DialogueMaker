@@ -10,7 +10,7 @@
     <Color x:Key="BackgroundColor">#191D1E</Color>
     <Color x:Key="LightBackgroundColor">#3B3B3B</Color>
     <Color x:Key="SecondaryLightColor">#28CA6C</Color>
-    <Color x:Key="SecondaryDarkColor">#00C1E8</Color>
+    <Color x:Key="SecondaryDarkColor">#4F4F4F</Color>
     <Color x:Key="SecondaryColor">#585858</Color>
     <Color x:Key="DefaultFontColor">#F0F0F0</Color>
     <Color x:Key="HoverGradientStartButtonColor">#E040FB</Color>
@@ -210,7 +210,7 @@
 
     <Style TargetType="{x:Type ScrollBar}">
         <Setter Property="Background" Value="{DynamicResource LightBackground}" />
-        <Setter Property="Foreground" Value="{DynamicResource Secondary}"/>
+        <Setter Property="Foreground" Value="{DynamicResource SecondaryDark}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollBar}">
@@ -226,7 +226,7 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
-                            <Setter Value="{DynamicResource SecondaryDark}" TargetName="Thumb" Property="Background" />
+                            <Setter Value="{DynamicResource Secondary}" TargetName="Thumb" Property="Background" />
                         </Trigger>
                         <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
                             <Setter Value="{DynamicResource Secondary}" TargetName="Thumb" Property="Background" />

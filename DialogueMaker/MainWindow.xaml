@@ -74,6 +74,47 @@
                                 <TextBox x:Name="ExportPathBox" Text="" MinWidth="150" MaxLines="1" TextWrapping="NoWrap" HorizontalAlignment="Stretch" InputScope="Url" GotFocus="ExportPathGotFocus" Template="{DynamicResource TextBoxBaseControlTemplate}"/>
                             </DockPanel>
                         </StackPanel>
+                        <StackPanel Margin="0,10,0,0" DockPanel.Dock="Top" HorizontalAlignment="Left">
+                            <DockPanel HorizontalAlignment="Left" VerticalAlignment="Stretch" >
+                                <Label Content="NPC types:" DockPanel.Dock="Top"/>
+                                <ListView x:Name="NpcTypesList" DockPanel.Dock="Bottom" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ListViewItem">
+                                                        <Border x:Name="bd" CornerRadius="10" Margin="0" Padding="4">
+                                                            <ContentPresenter
+                                                                Content="{TemplateBinding Content}"
+                                                                ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="true">
+                                                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Secondary}" />
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                    <ListView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Vertical" MaxHeight="130" />
+                                        </ItemsPanelTemplate>
+                                    </ListView.ItemsPanel>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <DockPanel>
+                                                <TextBox Text="{Binding Type}" Template="{DynamicResource TextBoxBaseControlTemplate}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" VerticalAlignment="Center" Margin="0,0,5,0" TextChanged="TypeTextChanged" FontFamily="Montserrat Medium" />
+                                                <Button Tag="{Binding }" Padding="9,3" Style="{DynamicResource DeleteButton}" Content="X" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" HorizontalAlignment="Right" DockPanel.Dock="Right" Click="RemoveTypeClicked" />
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </DockPanel>
+                            <Button Style="{DynamicResource NormalButton}" Content="Add New" DockPanel.Dock="Bottom" Margin="0,10,0,0" Click="NewTypeClicked"/>
+                        </StackPanel>
                         <DockPanel VerticalAlignment="Bottom" Margin="0,0,0,10">
                             <Button x:Name="ProjectExport" Content="Export" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="16" Click="ExportClicked" DockPanel.Dock="Right" Style="{DynamicResource NormalButton}" FontFamily="Montserrat Medium"/>
                             <Button x:Name="ProjectDelete" Content="Delete Project" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="16" Click="DeleteProjectClicked" Style="{DynamicResource DeleteButton}" FontFamily="Montserrat Medium"/>
@@ -90,13 +131,7 @@
                                 <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
                             <Label Content="NPC:"/>
-                            <!--<Grid Grid.Row="1">
-                                <Grid.OpacityMask>
-                                    <VisualBrush Visual="{Binding ElementName=clipMask}" Stretch="None" />
-                                </Grid.OpacityMask>
-                                <Border x:Name="clipMask" Background="White" CornerRadius="10" />-->
                             <ListView Name="NpcList" HorizontalAlignment="Stretch" MinWidth="180" VerticalContentAlignment="Center" Grid.Row="1" MaxWidth="180" SelectionChanged="NewNpcSelected" SelectionMode="Single" HorizontalContentAlignment="Stretch"/>
-                            <!--</Grid>-->
                             <Grid Margin="0,5,0,0" Grid.Row="2">
                                 <TextBox x:Name="NpcSearchBox" Text="" MaxLines="1" TextWrapping="NoWrap" InputScope="FileName" Template="{DynamicResource TextBoxBaseControlTemplate}" Grid.Row="2" HorizontalAlignment="Stretch" TextChanged="NpcSearchBoxChanged"/>
                                 <Label IsHitTestVisible="False" Content="Search for a NPC" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="7,0,0,0" Opacity="0.5" VerticalContentAlignment="Center">
@@ -145,15 +180,18 @@
                         <!--<Separator Margin="10,20,-10,20" Style="{DynamicResource VerticalSeparatorStyle}"/>-->
                         <Grid VerticalAlignment="Stretch" Margin="20,0,0,0" HorizontalAlignment="Stretch">
                             <DockPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                                <StackPanel Margin="0,0,20,0">
+                                <StackPanel Margin="0,0,20,0" HorizontalAlignment="Left">
                                     <Label Content="Name:"/>
                                     <TextBox x:Name="NpcNameBox" MinWidth="100" MaxLines="1" Width="150" InputScope="PersonalGivenName" Template="{DynamicResource TextBoxBaseControlTemplate}" KeyDown="UnFocusOnEnter" LostKeyboardFocus="NpcNameBoxLostFocus"/>
                                 </StackPanel>
                                 <StackPanel Margin="0,0,20,0">
                                     <Label Content="Type:"/>
                                     <ComboBox x:Name="NpcTypeBox" SelectionChanged="TypeChanged" MinWidth="140">
-                                        <ComboBoxItem IsSelected="True">Foreground</ComboBoxItem>
-                                        <ComboBoxItem>Background</ComboBoxItem>
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Label Padding="0" Content="{Binding Type}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
                                     </ComboBox>
                                 </StackPanel>
                                 <Grid VerticalAlignment="Bottom" HorizontalAlignment="Right">
